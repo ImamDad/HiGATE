@@ -38,4 +38,8 @@ class HiGATEWithExistingCode:
         
         # Add HiGATE-specific components
         self.cross_attention = CrossLevelAttention(config.HIDDEN_DIM, config.NUM_HEADS)
-        self.feature_projection =
+        self.feature_projection = self._create_feature_projection()
+        
+    def forward(self, data):
+        # Your existing forward logic + HiGATE enhancements
+        pass
