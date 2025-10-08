@@ -1,0 +1,49 @@
+# HiGATE: Hierarchical Graph Attention with Cross-Level Interaction
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?logo=PyTorch&logoColor=white)](https://pytorch.org/)
+
+Official implementation of **HiGATE** (Hierarchical Graph Attention with Cross-Level Interaction), a novel framework for multi-scale computational pathology that achieves state-of-the-art performance on nuclear segmentation and classification tasks.
+
+## 📖 Abstract
+
+HiGATE introduces a dual-graph architecture that concurrently models fine-grained cellular interactions and coarse-grained tissue regions through adaptive clustering. Its core innovation is a Cross-Level Attention mechanism enabling dynamic, bidirectional message passing between cellular and tissue hierarchies. Extensive evaluation demonstrates state-of-the-art performance with 91.3% accuracy and 0.896 F1-score on PanNuke, with exceptional generalizability in zero-shot validation on MoNuSeg.
+
+## 🚀 Key Features
+
+- **Dual-Graph Architecture**: Simultaneous modeling of Cell Graph and Tissue Graph
+- **Cross-Level Attention**: Dynamic bidirectional message passing between hierarchies
+- **Adaptive Clustering**: Semantic tissue region identification via DBSCAN
+- **Multi-Modal Features**: Integration of DINOv2 visual, morphological, and StarDist nuclear features
+- **Inherent Explainability**: Multi-scale interpretability aligned with pathological reasoning
+- **State-of-the-Art Performance**: 91.3% accuracy on PanNuke, 0.841 Dice on MoNuSeg
+
+## 🏗️ Architecture
+
+![HiGATE Architecture](docs/architecture.png)
+
+HiGATE's architecture consists of four core components:
+1. **Multi-modal Feature Extraction**: DINOv2 visual features + morphological features + StarDist nuclear features
+2. **Hierarchical Graph Construction**: Cell Graph (k-NN) + Tissue Graph (adaptive DBSCAN clustering)
+3. **Cross-Level Attention**: Bidirectional message passing between hierarchies
+4. **Multi-Scale Readout**: Combined classification with inherent explainability
+
+## 📥 Installation
+
+```bash
+# Clone repository
+git clone https://github.com/ImamDad/HiGATE.git
+cd HiGATE
+
+# Create conda environment
+conda create -n higate python=3.8
+conda activate higate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install PyTorch Geometric (follow official instructions for your CUDA version)
+pip install torch torchvision torchaudio
+pip install pyg-lib torch-scatter torch-sparse torch-cluster torch-spline-conv -f https://data.pyg.org/whl/torch-2.0.0+cu118.html
+pip install torch-geometric
