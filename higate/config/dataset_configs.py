@@ -14,6 +14,16 @@ class PanNukeConfig:
     masks_subdir: str = "extracted_masks"
     cell_counts_file: str = "extracted_cell_counts.csv"
     types_file: str = "extracted_types.csv"
+    
+    # Mask channels (0-4 are cell types, 5 is background)
+    mask_channels: int = 6
+    class_to_channel: dict = field(default_factory=lambda: {
+        "Neoplastic": 0,
+        "Inflammatory": 1, 
+        "Connective": 2,
+        "Dead": 3,
+        "Epithelial": 4
+    })
 
 @dataclass
 class MoNuSegConfig:
