@@ -1,6 +1,6 @@
 """Dataset-specific configurations."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class PanNukeConfig:
@@ -9,9 +9,11 @@ class PanNukeConfig:
     class_names: list = field(default_factory=lambda: [
         "Neoplastic", "Inflammatory", "Connective", "Dead", "Epithelial"
     ])
-    folds: list = field(default_factory=lambda: ["fold_1", "fold_2", "fold_3"])
-    image_size: tuple = (256, 256)
-    magnification: int = 40
+    folds: list = field(default_factory=lambda: ["fold0", "fold1", "fold2"])
+    images_subdir: str = "extracted_images_npy"
+    masks_subdir: str = "extracted_masks"
+    cell_counts_file: str = "extracted_cell_counts.csv"
+    types_file: str = "extracted_types.csv"
 
 @dataclass
 class MoNuSegConfig:
@@ -21,13 +23,17 @@ class MoNuSegConfig:
     organs: list = field(default_factory=lambda: [
         "Breast", "Liver", "Kidney", "Prostate", "Bladder", "Colon", "Stomach"
     ])
+    structure: str = "tcga"  # 'tcga' or 'grand'
 
 @dataclass
 class DigestPathConfig:
     """DigestPath dataset configuration."""
     num_classes: int = 2  # benign/malignant
-    image_size: tuple = (256, 256)
+    image_size: int = 256
     class_names: list = field(default_factory=lambda: ["Benign", "Malignant"])
+    image_extension: str = ".bmp"
+    train_csv: str = "train.csv"
+    test_csv: str = "test.csv"
 
 @dataclass
 class TCGA_BRCA_Config:
@@ -36,4 +42,7 @@ class TCGA_BRCA_Config:
     class_names: list = field(default_factory=lambda: ["Grade I", "Grade II", "Grade III"])
     num_patches: int = 20
     patch_size: int = 256
-    magnification: int = 20
+    level: int = 0
+    tissue_threshold: float = 0.1
+    slides_subdir: str = "slides"
+    labels_file: str = "labels.csv"
