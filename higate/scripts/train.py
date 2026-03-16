@@ -28,9 +28,9 @@ def parse_args():
     parser.add_argument('--config', type=str, default='config.yaml',
                         help='Configuration file')
     parser.add_argument('--data_dir', type=str, required=True,
-                        help='Path to PanNuke dataset')
-    parser.add_argument('--fold', type=str, default='fold_1',
-                        choices=['fold_1', 'fold_2', 'fold_3'],
+                        help='Path to PanNuke dataset (e.g., D:/PanNuke)')
+    parser.add_argument('--fold', type=str, default='fold0',
+                        choices=['fold0', 'fold1', 'fold2'],
                         help='Cross-validation fold')
     parser.add_argument('--checkpoint_dir', type=str, default='checkpoints',
                         help='Directory to save checkpoints')
@@ -56,7 +56,7 @@ def main():
     
     # Load configuration
     config = HiGATEConfig()
-    if args.config:
+    if args.config and Path(args.config).exists():
         with open(args.config, 'r') as f:
             yaml_config = yaml.safe_load(f)
             # Update config (simplified - in practice you'd need proper merging)
@@ -80,19 +80,22 @@ def main():
     train_transforms = get_train_transforms(config.data)
     val_transforms = get_val_transforms()
     
+    logger.info(f"Loading PanNuke dataset from {args.data_dir}, fold {args.fold}")
     train_dataset = PanNukeDataset(
         root_dir=args.data_dir,
         fold=args.fold,
         transform=train_transforms
     )
     
+    # For validation, use the same fold (PanNuke has predefined splits)
     val_dataset = PanNukeDataset(
         root_dir=args.data_dir,
-        fold=args.fold.replace('fold', 'fold'),  # Same fold for validation
+        fold=args.fold,  # Same fold for validation (adjust as needed)
         transform=val_transforms
     )
     
     # Compute morphological feature statistics for normalization
+    logger.info("Computing morphological feature statistics...")
     morph_features = []
     for i in range(min(1000, len(train_dataset))):
         sample = train_dataset[i]
@@ -110,7 +113,7 @@ def main():
         shuffle=True,
         num_workers=config.data.num_workers,
         pin_memory=config.data.pin_memory,
-        prefetch_factor=config.data.prefetch_factor
+        prefetch_factor=config.data.prefetch_factor if hasattr(config.data, 'prefetch_factor') else 2
     )
     
     val_loader = DataLoader(
@@ -121,8 +124,8 @@ def main():
         pin_memory=config.data.pin_memory
     )
     
-    logger.info(f"Train dataset size: {len(train_dataset)}")
-    logger.info(f"Val dataset size: {len(val_dataset)}")
+    logger.info(f"Train dataset size: {len(train_dataset)} nuclei")
+    logger.info(f"Val dataset size: {len(val_dataset)} nuclei")
     
     # Create model
     model = HiGATE(config.model)
